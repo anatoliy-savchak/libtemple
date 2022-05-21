@@ -19,7 +19,10 @@ class SectorLoc:
         return SectorLoc(value & 0x3FFFFFF, value >> 26)
 
     def to_filename(self):
-        return f'{self.pack():0{9}}.sec'
+        #return f'{self.pack()}.sec'
+        s = f'0x{self.y*4:x}{self.x:0>6x}'
+        dec = int(s, 16)
+        return f'{dec}.sec'
 
     @staticmethod
     def from_filename(s: str):
@@ -279,6 +282,14 @@ class Sector:
                 f.write(self.objectsblob)
             else:
                 bw.WriteInt32(self.iFirstObjectHeader)
+        return
+
+    @staticmethod
+    def generate_all_empty_sectors(dir: str):
+        for sy in range(1, 16):
+            for sx in range(1, 16):
+                sector = Sector((sx, sy), dir)
+                sector.save()
         return
 
 

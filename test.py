@@ -13,6 +13,15 @@ def test_see_sec_name():
     ts('469762055.sec')
     return
 
+def test_see_sec_name_all():
+    for sy in range(1, 16):
+        for sx in range(1, 16):
+            fn = libtemple.map.SectorLoc(sx, sy).to_filename()
+            s = libtemple.map.SectorLoc.from_filename(fn)
+            if s.x != sx or s.y != sy:
+                print('error!')
+    return
+
 def test_see_blocked_tiles():
     dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\AR1000'
     sector = libtemple.map.Sector(r'402653191.sec', dir)
@@ -38,16 +47,24 @@ def test_read_write_sec1():
 
 def test_gen_all():
     dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1'
-    sector = libtemple.map.Sector((7, 7), dir)
-    if True:
-        for y in range(64):
-            tile = sector.tiles[y*64]
-            assert isinstance(tile, libtemple.map.SectorTile)        
-            tile.flags = tile.flags | libtemple.map.TileFlags.BlockMask
-    #sector.save(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1\469762055-2.sec')
-    sector.save()
-    #sector = libtemple.map.Sector('067108865.sec', dir)
+    for sy in range(1, 16):
+        for sx in range(1, 16):
+            sector = libtemple.map.Sector((sx, sy), dir)
+            if True:
+                for y in range(64):
+                    tile = sector.tiles[y*64]
+                    assert isinstance(tile, libtemple.map.SectorTile)        
+                    tile.flags = tile.flags | libtemple.map.TileFlags.BlockMask
+            #sector.save(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1\469762055-2.sec')
+            sector.save()
+            #sector = libtemple.map.Sector('067108865.sec', dir)
     return
 
-test_gen_all()
+#test_gen_all()
 #test_read_write_sec1()
+
+#test_see_sec_name_all()
+
+# background from 26, 30
+import doc_helper
+doc_helper.generate_all_empty_secs()
