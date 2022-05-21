@@ -19,7 +19,7 @@ class SectorLoc:
         return SectorLoc(value & 0x3FFFFFF, value >> 26)
 
     def to_filename(self):
-        return f'{self.pack():0{8}}.sec'
+        return f'{self.pack():0{9}}.sec'
 
     @staticmethod
     def from_filename(s: str):
@@ -55,8 +55,20 @@ class Sector:
                 self.tiles.append(tile)
 
         self.lights = []
-        self.iRooflistFlags = 0
-        self.rest = None
+        self.iPlaceholderFlags = 0x00aa0004
+        self.iTileScriptsCount = 0
+        self.iRooflistFlags = 1 # means to skip
+        self.sectorScriptData1 = 0
+        self.sectorScriptData2 = 0
+        self.sectorScriptData3 = 0
+        self.townmapinfo = 0
+        self.aptitudeAdj = 0
+        self.lightScheme = 0
+        self.soundListfield00 = 0
+        self.soundListfield04 = 0
+        self.soundListfield08 = 0
+        self.objectsblob = None
+        self.iFirstObjectHeader = 0
         return
 
     def load(self, file_path_override: str = None):
@@ -149,12 +161,37 @@ class Sector:
 
             self.iRooflistFlags = br.ReadInt32()
             self.iPlaceholderFlags = br.ReadInt32()
-            pos = f.tell()
-            file_size = f.seek(0, 2)
-            f.seek(pos, 0)
-            rest_size = file_size - pos
-            self.rest = f.read(rest_size)
-            rest_size2 = len(self.rest)
+            if self.iPlaceholderFlags != 0xAA0000:
+
+                if self.iPlaceholderFlags >= 11141121:
+                    self.iTileScriptsCount = br.ReadInt32()
+
+                if self.iPlaceholderFlags >= 11141122:
+                    self.sectorScriptData1 = br.ReadInt32()
+                    self.sectorScriptData2 = br.ReadInt32()
+                    self.sectorScriptData3 = br.ReadInt32()
+
+                if self.iPlaceholderFlags >= 11141123:
+                    self.townmapinfo = br.ReadInt32()
+                    self.aptitudeAdj = br.ReadInt32()
+                    self.lightScheme = br.ReadInt32()
+
+                    self.soundListfield00 = br.ReadInt32()
+                    self.soundListfield04 = br.ReadInt32()
+                    self.soundListfield08 = br.ReadInt32()
+
+            if True:
+                self.iFirstObjectHeader = br.ReadInt32()
+                if self.iFirstObjectHeader == 0x77:
+                    f.seek(-4, 1)
+                    pos = f.tell()
+                    file_size = f.seek(0, 2)
+                    f.seek(pos, 0)
+                    objectsblob_size = file_size - pos
+                    self.objectsblob = f.read(objectsblob_size)
+                    objectsblob_size2 = len(self.objectsblob)
+                else:
+                    self.objectsblob = None
         return
 
     def save(self, file_path_override: str = None):
@@ -214,10 +251,34 @@ class Sector:
                     bw.WriteUInt32(tile.flags)
                     bw.WriteInt32(tile.padding4)
                     bw.WriteInt32(tile.padding5)
+                    f.flush()
 
             bw.WriteInt32(self.iRooflistFlags)
             bw.WriteInt32(self.iPlaceholderFlags)
-            f.write(self.rest)
+            if self.iPlaceholderFlags != 0xAA0000:
+
+                if self.iPlaceholderFlags >= 11141121:
+                    bw.WriteInt32(self.iTileScriptsCount)
+
+                if self.iPlaceholderFlags >= 11141122:
+                    bw.WriteInt32(self.sectorScriptData1)
+                    bw.WriteInt32(self.sectorScriptData2)
+                    bw.WriteInt32(self.sectorScriptData3)
+
+                if self.iPlaceholderFlags >= 11141123:
+                    bw.WriteInt32(self.townmapinfo)
+                    bw.WriteInt32(self.aptitudeAdj)
+                    bw.WriteInt32(self.lightScheme)
+
+                    bw.WriteInt32(self.soundListfield00)
+                    bw.WriteInt32(self.soundListfield04)
+                    bw.WriteInt32(self.soundListfield08)
+
+            f.flush()
+            if self.iFirstObjectHeader == 0x77:
+                f.write(self.objectsblob)
+            else:
+                bw.WriteInt32(self.iFirstObjectHeader)
         return
 
 
@@ -226,11 +287,11 @@ class SectorTile:
         self.x = x
         self.y = y
 
-        self.material = 0
+        self.material = TileMaterial.Dirt
         self.padding1 = 0
         self.padding2 = 0
         self.padding3 = 0
-        self.flags = TileMaterial.Grass
+        self.flags = TileFlags.TILEFLAG_NONE
         self.padding4 = 0
         self.padding5 = 0
         return

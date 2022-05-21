@@ -29,7 +29,25 @@ def test_see_blocked_tiles():
         print(f'{y}: {count_blocked}')
     return
 
-dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\AR1000'
-sector = libtemple.map.Sector(r'402653191.sec', dir)
-sector.load()
-sector.save(os.path.join(dir, r'402653191-2.sec'))
+def test_read_write_sec1():
+    dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\AR1000'
+    sector = libtemple.map.Sector(r'402653191.sec', dir)
+    sector.load()
+    sector.save(os.path.join(dir, r'402653191-2.sec'))
+    return
+
+def test_gen_all():
+    dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1'
+    sector = libtemple.map.Sector((7, 7), dir)
+    if True:
+        for y in range(64):
+            tile = sector.tiles[y*64]
+            assert isinstance(tile, libtemple.map.SectorTile)        
+            tile.flags = tile.flags | libtemple.map.TileFlags.BlockMask
+    #sector.save(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1\469762055-2.sec')
+    sector.save()
+    #sector = libtemple.map.Sector('067108865.sec', dir)
+    return
+
+test_gen_all()
+#test_read_write_sec1()
