@@ -1,5 +1,8 @@
 import os
+import doc_helper
 import libtemple.map
+import libtemple.grounds
+
 
 def test_see_sec_name():
     def ts(fn):
@@ -60,11 +63,31 @@ def test_gen_all():
             #sector = libtemple.map.Sector('067108865.sec', dir)
     return
 
+def test_see_back_name():
+    for fn in os.listdir(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR1000'):
+        if not fn.lower().endswith('.jpg'): continue
+        gloc = libtemple.grounds.GroundLoc.from_filename(fn)
+        if gloc.to_filename() != fn:
+            print('Error')
+            ffn = gloc.to_filename()
+    return
+
 #test_gen_all()
 #test_read_write_sec1()
 
 #test_see_sec_name_all()
 
 # background from 26, 30
-import doc_helper
-doc_helper.generate_all_empty_secs()
+
+#doc_helper.generate_all_empty_secs()
+#test_see_back_name()
+#g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR1000')
+#g.load()
+#print(g.active_tile_rect)
+#export_path = r'D:\Temp\region\active.jpg'
+#export_path = r'D:\Temp\region\active.png'
+#g.export_active_tile_rect(export_path)
+#libtemple.grounds.Grounds.generate_all_blank_tiles(r'D:\Temple\Temple of Elemental Evil.template\modules\zmod_iwd2\art\ground\test1')
+g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR4103')
+g.import_background_image(r'D:\IE\Resources\IWD2\Maps\AR4103.bmp')
+g.save(skip_empty=True)
