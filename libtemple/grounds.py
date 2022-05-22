@@ -4,6 +4,8 @@ import cv2
 import joblib
 import math
 
+GROUND_TILE_SIZE = 256
+
 class GroundLoc:
     def __init__(self, x: int, y: int):
         self.x = x
@@ -74,18 +76,18 @@ class Grounds:
         if width_tiles <=0 or height_tiles <=0:
             raise Exception('Incorrect active_tile_rect!')
 
-        width = 256 * width_tiles
-        height = 256 * height_tiles
+        width = GROUND_TILE_SIZE * width_tiles
+        height = GROUND_TILE_SIZE * height_tiles
         image = np.zeros((height, width, 3), np.uint8)
         for tile in self.tiles:
             assert isinstance(tile, GroundTile)
             if tile.im is None: continue
             if not (self.active_tile_rect[0] <= tile.loc.x <= self.active_tile_rect[2]): continue
             if not (self.active_tile_rect[1] <= tile.loc.y <= self.active_tile_rect[3]): continue
-            px = (tile.loc.x - self.active_tile_rect[0])*256
-            py = (tile.loc.y - self.active_tile_rect[1])*256
-            px1 = px + 256
-            py1 = py + 256
+            px = (tile.loc.x - self.active_tile_rect[0])*GROUND_TILE_SIZE
+            py = (tile.loc.y - self.active_tile_rect[1])*GROUND_TILE_SIZE
+            px1 = px + GROUND_TILE_SIZE
+            py1 = py + GROUND_TILE_SIZE
             image[py:py1, px:px1,:3] = tile.im
 
         if file_path.lower().endswith('.jpg'):
@@ -124,14 +126,14 @@ class Grounds:
         height, width, channels = bk.shape
         left_tile = top_left_tile_coord_tuple[0]
         top_tile = top_left_tile_coord_tuple[1]
-        width_tile = math.ceil(width / 256)
-        height_tile = math.ceil(height / 256)
+        width_tile = math.ceil(width / GROUND_TILE_SIZE)
+        height_tile = math.ceil(height / GROUND_TILE_SIZE)
         for y in range(height_tile):
-            py = y * 256
-            py1 = (y + 1) * 256
+            py = y * GROUND_TILE_SIZE
+            py1 = (y + 1) * GROUND_TILE_SIZE
             for x in range(width_tile):
-                px = x * 256
-                px1 = (x + 1) * 256
+                px = x * GROUND_TILE_SIZE
+                px1 = (x + 1) * GROUND_TILE_SIZE
 
                 tile = self.ensure_tile(x + left_tile, y + top_tile)
                 tile.create_new()
@@ -176,10 +178,10 @@ class GroundTile:
         return
 
     def create_new(self, v = None):
-        self.im = np.zeros((256, 256, 3), np.uint8)
+        self.im = np.zeros((GROUND_TILE_SIZE, GROUND_TILE_SIZE, 3), np.uint8)
         if not v is None:
-            for x in range(0, 256):
-                for y in range(0, 256):
+            for x in range(0, GROUND_TILE_SIZE):
+                for y in range(0, GROUND_TILE_SIZE):
                     self.im[y, x] = v.copy()
         self.is_empty = True
         self.file_exists = False

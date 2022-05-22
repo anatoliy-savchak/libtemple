@@ -1,9 +1,8 @@
-from ctypes import sizeof
 import os
 import enum
 import libtemple.binaryr
 
-from numpy import int32, isin
+SECTOR_SIDE_SIZE = 64
 
 class SectorLoc:
     def __init__(self, x: int, y: int):
@@ -34,8 +33,6 @@ class SectorLoc:
         return f'{self.x},{self.y}'
 
 class Sector:
-    SECTOR_SIDE_SIZE = 64
-
     def __init__(self, file_name_or_loc_or_tuple2, dir: str):
         self.dir = dir
         self.file_name = ''
@@ -52,8 +49,8 @@ class Sector:
         self.file_name = self.sector_location.to_filename()
 
         self.tiles = []
-        for y in range(Sector.SECTOR_SIDE_SIZE):
-            for x in range(Sector.SECTOR_SIDE_SIZE):
+        for y in range(SECTOR_SIDE_SIZE):
+            for x in range(SECTOR_SIDE_SIZE):
                 tile = SectorTile(x, y)
                 self.tiles.append(tile)
 
@@ -242,9 +239,9 @@ class Sector:
                     bw.WriteInt32(light2["light2_partSys_handle"])
 
 
-            for y in range(64):
-                for x in range(64):
-                    tile = self.tiles[y*64+x]
+            for y in range(SECTOR_SIDE_SIZE):
+                for x in range(SECTOR_SIDE_SIZE):
+                    tile = self.tiles[y*SECTOR_SIDE_SIZE+x]
                     assert isinstance(tile, SectorTile)
 
                     bw.WriteByte(int(tile.material))

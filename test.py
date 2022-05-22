@@ -48,7 +48,7 @@ def test_read_write_sec1():
     sector.save(os.path.join(dir, r'402653191-2.sec'))
     return
 
-def test_gen_all():
+def test_gen_all_sectors():
     dir = r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\maps\test1'
     for sy in range(1, 16):
         for sx in range(1, 16):
@@ -72,22 +72,22 @@ def test_see_back_name():
             ffn = gloc.to_filename()
     return
 
-#test_gen_all()
-#test_read_write_sec1()
+def test_see_export():
+    g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR1000')
+    g.load()
+    print(g.active_tile_rect)
+    #export_path = r'D:\Temp\region\active.jpg'
+    export_path = r'D:\Temp\region\active.png'
+    g.export_active_tile_rect(export_path)
+    return
 
-#test_see_sec_name_all()
+def test_see_all_empty_grounds():
+    libtemple.grounds.Grounds.generate_all_blank_tiles(r'D:\Temple\Temple of Elemental Evil.template\modules\zmod_iwd2\art\ground\test1')
+    return
 
-# background from 26, 30
+def test_see_import():
+    g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR4103')
+    g.import_background_image(r'D:\IE\Resources\IWD2\Maps\AR4103.bmp')
+    g.save(skip_empty=True)    
+    return
 
-#doc_helper.generate_all_empty_secs()
-#test_see_back_name()
-#g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR1000')
-#g.load()
-#print(g.active_tile_rect)
-#export_path = r'D:\Temp\region\active.jpg'
-#export_path = r'D:\Temp\region\active.png'
-#g.export_active_tile_rect(export_path)
-#libtemple.grounds.Grounds.generate_all_blank_tiles(r'D:\Temple\Temple of Elemental Evil.template\modules\zmod_iwd2\art\ground\test1')
-g = libtemple.grounds.Grounds(r'D:\Dev.Home\GitHub\anatoliy-savchak\toee.zmod.iwd2\src\zmod_iwd2\art\ground\AR4103')
-g.import_background_image(r'D:\IE\Resources\IWD2\Maps\AR4103.bmp')
-g.save(skip_empty=True)
